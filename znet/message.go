@@ -5,6 +5,7 @@ type Message struct {
 	MagicCode uint16 // 魔数（小安必须）
 	ID        uint8  // 消息的ID（命令字，小安必须）
 	Sn        uint8  // 序列号（小安必须）
+	Version   uint8  // 版本号
 	DataLen   uint16 // 消息的长度（小安必须）
 	Data      []byte // 消息的内容
 }
@@ -27,6 +28,11 @@ func (msg *Message) GetDataLen() uint16 {
 // GetSn 获取头部序列号
 func (msg *Message) GetSn() uint8 {
 	return msg.Sn
+}
+
+// GetSn 获取头部序列号
+func (msg *Message) GetVersion() uint8 {
+	return msg.Version
 }
 
 //GetMsgID 获取消息ID

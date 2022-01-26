@@ -14,10 +14,10 @@ import (
 
 var (
 	// 默认数据包头长度
-	defaultHeaderLen uint16 = 6
+	defaultHeaderLen uint16 = 10
 
 	// 默认魔数
-	defualtMagicCode = "aa55"
+	defualtMagicCode = "aaaa"
 )
 
 //DataPack 封包拆包类实例，暂时不需要成员
@@ -47,6 +47,16 @@ func (dp *DataPack) Pack(msg ziface.IMessage) ([]byte, error) {
 	}
 
 	if err := binary.Write(dataBuff, binary.BigEndian, defaultMagicCodeByte); err != nil {
+		return nil, err
+	}
+
+	// 写版本号
+	if err := binary.Write(dataBuff, binary.BigEndian, msg.GetVersion()); err != nil {
+		return nil, err
+	}
+
+	// 写数据长度
+	if err := binary.Write(dataBuff, binary.BigEndian, msg.GetDataLen()); err != nil {
 		return nil, err
 	}
 
@@ -80,7 +90,7 @@ func (dp *DataPack) Pack(msg ziface.IMessage) ([]byte, error) {
 
 //Unpack 拆包方法(解压数据)
 func (dp *DataPack) Unpack(binaryData []byte) (ziface.IMessage, error) {
-	//创建一个从输入二进制数据的ioReader
+	// 创建一个从输入二进制数据的ioReader
 	dataBuff := bytes.NewReader(binaryData)
 
 	//只解压head的信息，得到dataLen和msgID
@@ -91,6 +101,16 @@ func (dp *DataPack) Unpack(binaryData []byte) (ziface.IMessage, error) {
 		return nil, err
 	}
 
+	// 读数据长度
+	if err := binary.Read(dataBuff, binary.BigEndian, &msg.DataLen); err != nil {
+		return nil, err
+	}
+
+	// 读数据长度
+	if err := binary.Read(dataBuff, binary.BigEndian, &msg.Version); err != nil {
+		return nil, err
+	}
+
 	// 读命令字（msgID）
 	if err := binary.Read(dataBuff, binary.BigEndian, &msg.ID); err != nil {
 		return nil, err
@@ -98,11 +118,6 @@ func (dp *DataPack) Unpack(binaryData []byte) (ziface.IMessage, error) {
 
 	// 读序列号
 	if err := binary.Read(dataBuff, binary.BigEndian, &msg.Sn); err != nil {
-		return nil, err
-	}
-
-	// 读数据长度
-	if err := binary.Read(dataBuff, binary.BigEndian, &msg.DataLen); err != nil {
 		return nil, err
 	}
 
