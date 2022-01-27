@@ -50,13 +50,13 @@ func (dp *DataPack) Pack(msg ziface.IMessage) ([]byte, error) {
 		return nil, err
 	}
 
-	// 写版本号
-	if err := binary.Write(dataBuff, binary.BigEndian, msg.GetVersion()); err != nil {
+	// 写数据长度
+	if err := binary.Write(dataBuff, binary.BigEndian, msg.GetDataLen()); err != nil {
 		return nil, err
 	}
 
-	// 写数据长度
-	if err := binary.Write(dataBuff, binary.BigEndian, msg.GetDataLen()); err != nil {
+	// 写版本号
+	if err := binary.Write(dataBuff, binary.BigEndian, msg.GetVersion()); err != nil {
 		return nil, err
 	}
 
@@ -72,11 +72,6 @@ func (dp *DataPack) Pack(msg ziface.IMessage) ([]byte, error) {
 	}
 
 	if err := binary.Write(dataBuff, binary.BigEndian, sn); err != nil {
-		return nil, err
-	}
-
-	// 写dataLen
-	if err := binary.Write(dataBuff, binary.BigEndian, msg.GetDataLen()); err != nil {
 		return nil, err
 	}
 
